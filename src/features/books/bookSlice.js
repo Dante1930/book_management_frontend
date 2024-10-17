@@ -8,7 +8,7 @@ export const fetchBooks = createAsyncThunk('books/fetchBooks', async ({ title, a
   const response = await axios.get('http://localhost:4000/api/books', { 
     params: { title, author, genre, page },
     headers: {
-      Authorization: `Bearer ${getAuthToken()}`, // Include the token in the header
+      Authorization: `${getAuthToken()}`, // Include the token in the header
     },
   });
   return response.data;
