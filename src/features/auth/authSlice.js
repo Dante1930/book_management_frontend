@@ -116,6 +116,7 @@ const authSlice = createSlice({
         state.error = null;
         // Save token to localStorage
         localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('user', JSON.stringify(action.payload.user));  
       })
       // Handle successful registration
       .addCase(registerUser.fulfilled, (state, action) => {
@@ -125,6 +126,7 @@ const authSlice = createSlice({
         state.error = null;
         // Save token to localStorage
         localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('user', JSON.stringify(action.payload.user));  
       })
       // Handle profile update (no token change, just update user info)
       .addCase(updateUserProfile.fulfilled, (state, action) => {
@@ -162,9 +164,9 @@ const authSlice = createSlice({
       })
       .addCase(fetchUserDetails.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.error = null;
-        localStorage.setItem('user', JSON.stringify(action.payload));  // Update user in localStorage
+        localStorage.setItem('user', JSON.stringify(action.payload.user));  
       })
       .addCase(fetchUserDetails.pending, (state) => {
         state.loading = true;
