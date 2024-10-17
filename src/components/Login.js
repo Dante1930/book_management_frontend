@@ -52,6 +52,7 @@ const Login = () => {
         {/* Display validation errors */}
         {error && (
           <ul className="text-danger mt-2">
+            {/* Display each error message */}
             {error.map((err, index) => (
               <li key={index}>{err.msg}</li>
             ))}

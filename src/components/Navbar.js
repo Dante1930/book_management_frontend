@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../features/auth/authSlice';
+import { fetchUserDetails,logout } from '../features/auth/authSlice';
 
 const Navbar = () => {
   const { user, token } = useSelector((state) => state.auth); // Get user and token from Redux state
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUserDetails());
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -34,9 +38,6 @@ const Navbar = () => {
               <>
                 <li className="nav-item">
                   <Link className="nav-link" to="/">Home</Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/profile">Profile</Link>
                 </li>
                 <li className="nav-item">
                   <span className="nav-link">Hi, {user?.name}</span>

@@ -69,10 +69,31 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+export const fetchUserDetails = createAsyncThunk(
+  'auth/fetchUserDetails',
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found');
+      
+      const response = await axios.get('http://localhost:4000/api/auth/me', {
+        headers: { Authorization: `${token}` },
+      });
+      return response.data;
+    } catch (err) {
+      if (err.response && err.response.data) {
+        return rejectWithValue(err.response.data);
+      } else {
+        return rejectWithValue([{ msg: err.message }]);
+      }
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
+    user: JSON.parse(localStorage.getItem('user')) || null, // Load user from localStorage
     token: localStorage.getItem('token') || null, // Load token from localStorage on init
     loading: false,
     error: null,
@@ -82,6 +103,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem('token'); // Remove token from localStorage on logout
+      localStorage.removeItem('user');   // Clear user from localStorage
     },
   },
   extraReducers: (builder) => {
@@ -137,6 +159,20 @@ const authSlice = createSlice({
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || action.error.message;
+      })
+      .addCase(fetchUserDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+        localStorage.setItem('user', JSON.stringify(action.payload));  // Update user in localStorage
+      })
+      .addCase(fetchUserDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
       });
   },
 });
